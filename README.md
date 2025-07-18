@@ -37,3 +37,18 @@ Créer une application web de planification d’emploi du temps, couplée à un 
    agent.py (Flask)
        ↓ subprocess.Popen(cmd)
    Système Windows 
+---
+## Explications:
+index.html propose de créer des tâches:
+- Texte (pur texte)
+- Musique (saisir un url et il le lit en arrière plan quand clic sur l'évènement)
+- Youtube (ouvre un url du site web Youtube.com)
+- Application: Potentiel énorme puisqu'on peut tout faire:
+      ↓
+  On peut ouvrir cmd et ainsi utiliser curl pour télécharger des scripts, des applis...
+  On peut ouvrir n'importe quelle appli existante
+  On peut éxécuter n'importe quelle commande, y compris runas qui ouvrira l'uac et donnera le contrôle quasi total
+  ---
+  ## Exemples d'utilisation:
+  - Je peux insérer une musique youtube dans la partie de 8h à 9h
+  - Je peux éxécuter des scripts --> automatisation totale, je peux mettre le mode avion, éteindre l'écran, scrapper tel ou tel site, générer un compte rendu word, poster qqch sur X(Twitter), lancer l'assisstant... 
