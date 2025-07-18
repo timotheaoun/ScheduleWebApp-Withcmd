@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -126,11 +126,20 @@
         }
         if (ev.type === 'app') {
           const btn = document.createElement('button');
-          btn.textContent = 'Launch App';
+          btn.textContent = 'Lancer app';
           btn.style.width = '100%';
           btn.onclick = async () => {
-            const err = await window.electronAPI.launchApp(ev.data);
-            if (err) alert('Erreur lancement: ' + err);
+            try {
+              const res = await fetch("http://localhost:5005/run", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cmd: ev.data })
+              });
+              const json = await res.json();
+              if (json.status !== "ok") alert("Erreur lancement : " + json.message);
+            } catch (e) {
+              alert("Agent local non détecté (localhost:5005). Lancez agent.py.");
+            }
           };
           div.appendChild(btn);
         }
@@ -174,7 +183,7 @@
         type === 'text' ? 'Texte de la tâche:' :
         type === 'music' ? 'URL du fichier audio:' :
         type === 'youtube' ? 'URL YouTube (embed ou lien):' :
-        'Chemin complet de l\\'application (ex: C:/Windows/System32/cmd.exe)'
+        'Chemin complet de l\'application (ex: C:/Windows/System32/cmd.exe)'
       );
       if (!data) return;
       events.push({ type, data, day: cell.dataset.day, hour: cell.dataset.hour });
