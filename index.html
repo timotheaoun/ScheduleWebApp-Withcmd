@@ -1,65 +1,67 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dark Schedule Planner</title>
   <style>
     :root {
       --bg: #1e1e2e;
       --panel: #2a2a3d;
-      --accent-start: #ff5c8a;
-      --accent-end: #1fb6ff;
       --text: #e0e0e8;
-      --hover: #3b3b55;
       --transition: 0.3s ease;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       display: flex; flex-direction: column; min-height: 100vh;
     }
-    header { padding:1rem; text-align:center; background:var(--panel);
-      box-shadow:0 2px 4px rgba(0,0,0,0.5);
+    header { padding: 1rem; text-align: center; background: var(--panel);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
-    main { flex:1; display:flex; padding:1rem; gap:1rem; }
-    .sidebar { width:200px; background:var(--panel);
-      border-radius:0.5rem; padding:1rem; display:flex;
-      flex-direction:column; gap:1rem;
+    main { flex: 1; display: flex; padding: 1rem; gap: 1rem; }
+    .sidebar { width: 200px; background: var(--panel);
+      border-radius: 0.5rem; padding: 1rem;
+      display: flex; flex-direction: column; gap: 1rem;
     }
-    .sidebar select, .sidebar button, .sidebar label {
-      background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
-      color: #fff; border:none; padding:0.5rem;
-      border-radius:0.25rem; cursor:pointer;
-      transition:background var(--transition);
-      text-align:center;
-      font-size:1rem;
+    .sidebar select, .sidebar button, .sidebar label, .sidebar input[type="color"] {
+      background: linear-gradient(135deg, #ff5c8a, #1fb6ff);
+      color: #fff; border: none; padding: 0.5rem;
+      border-radius: 0.25rem; cursor: pointer;
+      transition: background var(--transition);
+      font-size: 1rem;
+      text-align: center;
     }
-    .sidebar select { appearance:none; }
-    .sidebar select:hover, .sidebar button:hover, .sidebar label:hover { background: var(--hover); }
-    .timetable { flex:1; display:grid;
-      grid-template-columns:60px repeat(5,1fr);
-      grid-template-rows:40px repeat(12,1fr);
-      background:var(--panel); border-radius:0.5rem;
-      overflow:hidden;
+    .sidebar input[type="color"] { padding: 0; height: 2rem; }
+    .sidebar select:hover, .sidebar button:hover, .sidebar label:hover, .sidebar input[type="color"]:hover { background: #3b3b55; }
+    .timetable { flex: 1; display: grid;
+      grid-template-columns: 60px repeat(5, 1fr);
+      grid-template-rows: 40px repeat(12, 1fr);
+      background: var(--panel); border-radius: 0.5rem;
+      overflow: hidden;
     }
-    .timetable div { border:1px solid rgba(255,255,255,0.1);
-      display:flex; align-items:center; justify-content:center;
-      transition:background var(--transition); position:relative;
+    .timetable div { border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
     }
-    .timetable .header { background:var(--panel); font-weight:bold; }
-    .timetable .cell:hover { background:rgba(255,255,255,0.05); }
-    .event { position:absolute;
-      background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
-      color:#fff; padding:0.25rem; border-radius:0.25rem;
-      cursor:grab; transition:transform var(--transition), opacity var(--transition);
-      outline: none;
+    .timetable .header { display: flex; align-items: center; justify-content: center;
+      background: var(--panel); font-weight: bold;
     }
-    .event.dragging { opacity:0.7; cursor:grabbing; }
+    .timetable .cell { display: flex; flex-direction: column; padding: 2px; gap: 4px;
+      transition: background var(--transition);
+    }
+    .timetable .cell:hover { background: rgba(255,255,255,0.05); }
+    .event { background: var(--accent, #444);
+      color: #fff; padding: 4px 8px; border-radius: 4px;
+      font-size: 0.9rem; line-height: 1rem;
+      cursor: pointer; transition: opacity var(--transition);
+      display: flex; flex-direction: column;
+    }
+    .event .title { font-weight: bold; }
+    .event .desc { font-size: 0.8rem; opacity: 0.8; }
+    .event.dragging { opacity: 0.6; }
     .event.selected { box-shadow: 0 0 0 2px #fff; }
-    .event audio { width:100%; border-radius:0.25rem; }
-    footer { text-align:center; padding:0.5rem; font-size:0.8rem; }
-    input[type=file] { display:none; }
+    footer { text-align: center; padding: 0.5rem; font-size: 0.8rem; }
+    input[type=file] { display: none; }
   </style>
 </head>
 <body>
@@ -72,134 +74,101 @@
         <option value="youtube">YouTube</option>
         <option value="app">Application</option>
       </select>
+      <input type="color" id="colorPicker" value="#ff5c8a">
       <button id="exportJson">Export JSON</button>
       <input type="file" id="importJson" accept="application/json" />
       <label for="importJson">Import JSON</label>
-      <p style="font-size:0.9rem; color:rgba(224,224,232,0.7);">Cliquez sur une case pour ajouter un événement.<br>Sélectionnez un événement et appuyez sur Suppr pour le supprimer.</p>
+      <p style="font-size:0.9rem; color:rgba(224,224,232,0.7);">
+        Cliquez sur une case pour ajouter un événement.<br>
+        Sélectionnez un événement et appuyez sur Suppr pour le supprimer.
+      </p>
     </div>
     <div class="timetable" id="timetable"></div>
   </main>
   <footer>&copy; 2025 Dark Planner Inc.</footer>
   <script>
-    const days = ['Time','Mon','Tue','Wed','Thu','Fri'];
-    const hours = Array.from({length:12},(_,i) => `${i+8}:00`);
+    const days = ['Time','Lun','Mar','Mer','Jeu','Ven'];
+    const hours = Array.from({length:12},(_,i)=>`${i+8}:00`);
     const table = document.getElementById('timetable');
     let events = [];
     let selectedEvent = null;
 
     function buildGrid() {
       table.innerHTML = '';
-      days.forEach(d => {
-        const h = document.createElement('div'); h.textContent = d; h.classList.add('header'); table.appendChild(h);
-      });
-      hours.forEach(hVal => {
-        const timeCell = document.createElement('div'); timeCell.textContent = hVal; timeCell.classList.add('header'); table.appendChild(timeCell);
-        days.slice(1).forEach((_, dayIdx) => {
-          const cell = document.createElement('div');
-          cell.classList.add('cell'); cell.dataset.day = dayIdx; cell.dataset.hour = hours.indexOf(hVal);
-          cell.addEventListener('click', () => onCellClick(cell));
-          cell.addEventListener('dragover', e => e.preventDefault());
-          cell.addEventListener('drop', onDrop);
+      days.forEach(d=>{ const h=document.createElement('div'); h.textContent=d; h.classList.add('header'); table.appendChild(h); });
+      hours.forEach(h=>{
+        const th=document.createElement('div'); th.textContent=h; th.classList.add('header'); table.appendChild(th);
+        days.slice(1).forEach((_,dayIdx)=>{
+          const cell=document.createElement('div'); cell.classList.add('cell');
+          cell.dataset.day=dayIdx; cell.dataset.hour=hours.indexOf(h);
+          cell.addEventListener('click',()=>onCellClick(cell));
+          cell.addEventListener('dragover',e=>e.preventDefault());
+          cell.addEventListener('drop',onDrop);
           table.appendChild(cell);
         });
       });
       renderEvents();
     }
 
-    async function renderEvents() {
-      document.querySelectorAll('.event').forEach(e => e.remove());
-      events.forEach((ev, idx) => {
+    function renderEvents(){
+      document.querySelectorAll('.cell').forEach(c=>c.innerHTML='');
+      events.forEach((ev,idx)=>{
         const sel = `.cell[data-day='${ev.day}'][data-hour='${ev.hour}']`;
         const cell = document.querySelector(sel);
-        if (!cell) return;
-        const div = document.createElement('div');
-        div.className = 'event'; div.draggable = true; div.tabIndex = 0;
-        div.dataset.index = idx;
-        div.style.top = '5%'; div.style.left = '5%'; div.style.width = '90%'; div.style.height = '90%';
-        if (ev.type === 'text') div.textContent = ev.data;
-        if (ev.type === 'music') {
-          const audio = document.createElement('audio'); audio.src = ev.data; audio.controls = true; audio.loop = true; div.appendChild(audio);
-        }
-        if (ev.type === 'youtube') {
-          const btn = document.createElement('button'); btn.textContent = '▶ YouTube'; btn.style.width = '100%';
-          btn.onclick = () => window.open(ev.data, '_blank'); div.appendChild(btn);
-        }
-        if (ev.type === 'app') {
-          const btn = document.createElement('button');
-          btn.textContent = 'Lancer app';
-          btn.style.width = '100%';
-          btn.onclick = async () => {
-  try {
-    const res = await fetch('http://localhost:5005/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cmd: ev.data })
-    });
-    const json = await res.json();
-    if (!json.ok) alert('Erreur lancement: ' + json.error);
-  } catch (err) {
-    alert('Agent local non détecté (localhost:5005). Lancez agent.py.');
-  }
-};
+        if(!cell) return;
+        const div=document.createElement('div');
+        div.className='event'; div.draggable=true; div.dataset.index=idx;
+        div.style.background=ev.color;
+        const t=document.createElement('div'); t.className='title'; t.textContent=ev.title;
+        const d=document.createElement('div'); d.className='desc'; d.textContent=ev.desc;
+        div.append(t,d);
 
-          div.appendChild(btn);
+        if(ev.type==='text'){
+        } else if(ev.type==='music'){
+          const audio=document.createElement('audio'); audio.src=ev.data; audio.controls=true; audio.loop=true;
+          audio.style.marginTop='4px'; div.appendChild(audio);
+        } else if(ev.type==='youtube'){
+          const link=document.createElement('a'); link.href=ev.data; link.textContent='▶ ' + ev.title;
+          link.target='_blank'; link.style.marginTop='4px'; link.style.color='#fff'; div.appendChild(link);
+        } else if(ev.type==='app'){
+          div.addEventListener('dblclick',()=>{
+            fetch('http://localhost:5005/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd:ev.data})});
+          });
         }
-        div.addEventListener('dragstart', onDragStart);
-        div.addEventListener('dragend', onDragEnd);
-        div.addEventListener('click', e => { e.stopPropagation(); selectEvent(div); });
+
+        div.addEventListener('click',e=>{ e.stopPropagation(); selectEvent(div); });
+        div.addEventListener('dragstart',onDragStart);
+        div.addEventListener('dragend',onDragEnd);
         cell.appendChild(div);
       });
     }
 
-    function selectEvent(div) {
-      if (selectedEvent) selectedEvent.classList.remove('selected');
-      selectedEvent = div;
-      div.classList.add('selected');
-      div.focus();
-    }
+    function selectEvent(div){ if(selectedEvent) selectedEvent.classList.remove('selected'); selectedEvent=div; div.classList.add('selected'); }
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Delete' && selectedEvent) {
-        const idx = parseInt(selectedEvent.dataset.index);
-        events.splice(idx, 1);
-        selectedEvent = null;
-        buildGrid();
-      }
-    });
+    document.addEventListener('keydown',e=>{ if(e.key==='Delete'&&selectedEvent){ events.splice(selectedEvent.dataset.index,1); selectedEvent=null; buildGrid(); }});
 
-    let dragged = null;
-    function onDragStart(e) { dragged = e.target; dragged.classList.add('dragging'); selectEvent(dragged); }
-    function onDragEnd(e) { dragged.classList.remove('dragging'); }
-    function onDrop(e) {
-      const cell = e.currentTarget; const day = cell.dataset.day; const hour = cell.dataset.hour;
-      const idx = parseInt(dragged.dataset.index);
-      events[idx].day = day; events[idx].hour = hour;
+    let dragged=null;
+    function onDragStart(e){ dragged=e.target; dragged.classList.add('dragging'); selectEvent(dragged); }
+    function onDragEnd(e){ dragged.classList.remove('dragging'); }
+    function onDrop(e){ const cell=e.currentTarget; const day=cell.dataset.day; const hour=cell.dataset.hour; events[dragged.dataset.index].day=day; events[dragged.dataset.index].hour=hour; buildGrid(); }
+
+    function onCellClick(cell){
+      if(cell.querySelector('.event')) return;
+      const type=document.getElementById('taskType').value;
+      const title=prompt('Titre:'); if(!title) return;
+      const desc=prompt('Description:')||'';
+      let data='';
+      if(type==='text') data=prompt('Texte:')||'';
+      if(type==='music') data=prompt('URL du fichier audio:')||'';
+      if(type==='youtube') data=prompt('URL YouTube (embed ou lien):')||'';
+      if(type==='app') data=prompt('Chemin complet de l\'application:')||'';
+      const color=document.getElementById('colorPicker').value;
+      events.push({type,title,desc,data,color,day:cell.dataset.day,hour:cell.dataset.hour});
       buildGrid();
     }
 
-    function onCellClick(cell) {
-      if (cell.querySelector('.event')) return;
-      const type = document.getElementById('taskType').value;
-      const data = prompt(
-        type === 'text' ? 'Texte de la tâche:' :
-        type === 'music' ? 'URL du fichier audio:' :
-        type === 'youtube' ? 'URL YouTube (embed ou lien):' :
-        'Chemin complet de l\'application (ex: C:/Windows/System32/cmd.exe)'
-      );
-      if (!data) return;
-      events.push({ type, data, day: cell.dataset.day, hour: cell.dataset.hour });
-      buildGrid();
-    }
-
-    document.getElementById('exportJson').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(events, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'schedule.json'; a.click(); URL.revokeObjectURL(url);
-    });
-    document.getElementById('importJson').addEventListener('change', e => {
-      const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
-      reader.onload = ev => { try { events = JSON.parse(ev.target.result); buildGrid(); } catch {} };
-      reader.readAsText(file);
-    });
+    document.getElementById('exportJson').onclick=()=>{ const b=new Blob([JSON.stringify(events,null,2)],{type:'application/json'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='schedule.json'; a.click(); URL.revokeObjectURL(u); };
+    document.getElementById('importJson').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ events=JSON.parse(ev.target.result); buildGrid(); }; r.readAsText(f); });
 
     buildGrid();
   </script>
