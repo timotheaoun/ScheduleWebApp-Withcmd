@@ -1,19 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
+from flask_cors import CORS
 import subprocess
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/run', methods=['POST'])
-def run_command():
-    data = request.get_json()
-    cmd = data.get("cmd")
+def run():
+    data = request.json
+    cmd = data.get('cmd')
     if not cmd:
-        return jsonify({"status": "error", "message": "No command provided"}), 400
+        return {'error': 'Aucune commande reçue'}, 400
     try:
         subprocess.Popen(cmd, shell=True)
-        return jsonify({"status": "ok"}), 200
+        return {'ok': True}
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return {'error': str(e)}, 500
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(port=5005)
