@@ -45,10 +45,10 @@ index.html propose de créer des tâches:
 - Youtube (ouvre un url du site web Youtube.com)
 - <p>Application: Potentiel énorme puisqu'on peut tout faire:
       ↓
-  On peut ouvrir cmd et ainsi utiliser curl pour télécharger des scripts, des applis...
-  On peut ouvrir n'importe quelle appli existante
-  On peut éxécuter n'importe quelle commande, y compris runas qui ouvrira l'uac et donnera le contrôle quasi total</p>
+  - On peut ouvrir cmd et ainsi utiliser curl pour télécharger des scripts, des applis...
+  - On peut ouvrir n'importe quelle appli existante
+  - On peut éxécuter n'importe quelle commande, y compris runas qui ouvrira l'uac et donnera le contrôle quasi total </p>
   ---
-  ## Exemples d'utilisation:
+  <h2>Exemples d'utilisation:</h2> 
   - Je peux insérer une musique youtube dans la partie de 8h à 9h
   - Je peux éxécuter des scripts --> automatisation totale, je peux mettre le mode avion, éteindre l'écran, scrapper tel ou tel site, générer un compte rendu word, poster qqch sur X(Twitter), lancer l'assisstant... 
