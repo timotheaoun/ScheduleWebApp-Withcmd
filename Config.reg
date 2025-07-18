@@ -1,8 +1,0 @@
-Windows Registry Editor Version 5.00
-
-[HKEY_CLASSES_ROOT\monapp]
-@="URL:Mon App Protocol"
-"URL Protocol"=""
-
-[HKEY_CLASSES_ROOT\monapp\shell\open\command]
-@="cmd.exe /c \"%1\""
